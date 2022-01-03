@@ -4,12 +4,6 @@
 
 #include "common_types.h"
 #include <Arduino.h>
-#define DEFAULT_P 1
-#define DEFAULT_I 0.1
-#define DEFAULT_D 0.5
-
-#define INIT_COUNT 0
-#define INIT_TGT 0
 
 /*
  *  Does the servo calculations. Position and target are 
@@ -20,19 +14,23 @@ class Servo {
     public:
         //Servo();
         void init(uint8_t inp,uint8_t out,uint8_t reverse, 
-              uint8_t encA, uint8_t encB);
+              uint8_t encA, uint8_t encB, float outfreq);
         
         void updateCount();
-        void updateTgt();
-        void updateCMD();
+        void updateTgt();  //todo use pulseIn()
+        void updateCMD(int tgt);
 
     private:
-        uint8_t dutyCycle(int tgt);
+        void calcDutyCycle(int tgt);
+        void setDirection(int dir);
         int count_;
         int tgt_;
-        double p_;
-        double i_;
-        double d_;
+        float Kp_;
+        float Ki_;
+        float Kd_;
+        float eint_; // accumulated err integral
+        float eprev_; // stores the last err for err deriv
+        long tprev_; // previous time in us
 
         bool currEncA_;
         bool currEncB_;

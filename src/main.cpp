@@ -36,13 +36,12 @@
 // static const int in_pin_asg[] = {15, 16};  // input pin assignment
 // static const int out_pin_asg[] = {17, 18};  // output pin assignment
 
-using millis_t = unsigned long;
 // static Servo right;
 // static Servo left;
 enum Channel {RightCH=0, LeftCH};
 static Channel all_channels[] = {RightCH, LeftCH};
 static pwm_t pwm[MAX_CHANNELS] = {};
-static millis_t last_pwm;
+static long last_pwm;
 
 static Servo right;
 static Servo left;
