@@ -19,10 +19,13 @@ class Servo {
         void updateCount();
         void updateTgt();  //todo use pulseIn()
         void updateCMD(int tgt);
+        uint8_t getEncBPin();
+        void addToCount(int toAdd);
 
     private:
         void calcDutyCycle(int tgt);
         void setDirection(int dir);
+        void readEncoder();
         int count_;
         int tgt_;
         float Kp_;
@@ -41,7 +44,7 @@ class Servo {
         // pins:
         unsigned inp_;
         unsigned out_;
-        unsigned rev_;
+        unsigned dir_;
         unsigned encA_;
         unsigned encB_;
 
