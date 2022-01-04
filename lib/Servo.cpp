@@ -2,6 +2,7 @@
 
 #include "Servo.h"
 #include <analogWrite.h>
+#include <SimplyAtomic.h>
 
 #define DEFAULT_KP 1
 #define DEFAULT_KI 0.1
@@ -9,12 +10,25 @@
 
 #define INIT_COUNT 0
 #define MAX_COUNT 1000 // TODO measure actual values
+#define MIN_COUNT -1000
+
 #define INIT_TGT 0
 
 #define FWD HIGH
 #define BCK LOW
 
 #define MAX_DUTY_CYCLE 255U
+
+#define PULSEIN_TIMEOUT 1e5  // us
+
+// PWM time constants:
+#define PWM_INP_MIN 900  // us
+#define PWM_INP_MAX 2000  // us
+#define PWM_OUT_FREQ 1000  // Hz
+//#define todo conversion from pulse width to counts - TGT_INP_CONV
+#define TGT_INP_CONV 0 // todo
+
+
 
 uint8_t Servo::getEncBPin() {
     return encB_;
@@ -48,12 +62,20 @@ void Servo::init(uint8_t inp, uint8_t out, uint8_t dir, uint8_t encA, uint8_t en
     // analogWrite(out_, calcDutyCycle(INIT_TGT), MAX_DUTY_CYCLE);
 }
 
+void Servo::updateTgt() {
+    int inp;
+    ATOMIC() {
+        inp = pulseIn(inp_, HIGH, PULSEIN_TIMEOUT);
+    }
+    tgt_ = TGT_INP_CONV * inp;
+}
+
 void Servo::updateCMD(int tgt) 
 {
     if (tgt > MAX_COUNT)
         tgt = MAX_COUNT;
-    if (tgt < - MAX_COUNT)
-        tgt = - MAX_COUNT;
+    if (tgt < MIN_COUNT)
+        tgt = MIN_COUNT;
     long t = micros();
     float dt = (float)(tprev_ - t);
     float e = (float)(tgt - count_);

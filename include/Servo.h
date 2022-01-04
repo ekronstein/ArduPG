@@ -42,11 +42,11 @@ class Servo {
         bool PrevEncB_;
 
         // pins:
-        unsigned inp_;
-        unsigned out_;
-        unsigned dir_;
-        unsigned encA_;
-        unsigned encB_;
+        uint8_t inp_;
+        uint8_t out_;
+        uint8_t dir_;
+        uint8_t encA_;
+        uint8_t encB_;
 
 };
 
