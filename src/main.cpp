@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <unordered_map>
 #include <analogWrite.h>
 #include <SimplyAtomic.h>
 #include "common_types.h"
