@@ -7,21 +7,21 @@
 
 
 // Motor pins:
-#define MOTOR_OUT_RIGHT 0
-#define MOTOR_OUT_LEFT 0
+#define MOTOR_FWD_RIGHT 0
+#define MOTOR_FWD_LEFT 0
 
-#define MOTOR_REVERSE_RIGHT 0
-#define MOTOR_REVERSE_LEFT 0
+#define MOTOR_BACK_RIGHT 0
+#define MOTOR_BACK_LEFT 0
 
-#define MOTOR_INP_RIGHT 0
-#define MOTOR_INP_LEFT 0
+#define MOTOR_INP_RIGHT 25 
+#define MOTOR_INP_LEFT 26
 
 // Encoder pins:
-#define ENCA_RIGHT 0
-#define ENCB_RIGHT 0
+#define ENCA_RIGHT 17 
+#define ENCB_RIGHT 5  
 
-#define ENCA_LEFT 0
-#define ENCB_LEFT 0
+#define ENCA_LEFT 18  
+#define ENCB_LEFT 19
 
 static Servo right;
 static Servo left;
@@ -49,8 +49,8 @@ void readLeftEncoder() {
 
 void setup() {
   // put your setup code here, to run once:
-  right.init(MOTOR_INP_RIGHT,MOTOR_OUT_RIGHT, MOTOR_REVERSE_RIGHT, ENCA_RIGHT, ENCB_RIGHT);
-  left.init(MOTOR_INP_LEFT,MOTOR_OUT_LEFT, MOTOR_REVERSE_LEFT, ENCA_LEFT, ENCB_LEFT);
+  right.init(MOTOR_INP_RIGHT,MOTOR_FWD_RIGHT, MOTOR_BACK_RIGHT, ENCA_RIGHT, ENCB_RIGHT);
+  left.init(MOTOR_INP_LEFT,MOTOR_FWD_LEFT, MOTOR_BACK_LEFT, ENCA_LEFT, ENCB_LEFT);
   attachInterrupt(digitalPinToInterrupt(ENCA_RIGHT), readRightEncoder, RISING);
   attachInterrupt(digitalPinToInterrupt(ENCA_LEFT), readLeftEncoder, RISING);
 }

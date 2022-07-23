@@ -4,6 +4,26 @@
 
 #include "common_types.h"
 #include <Arduino.h>
+#define DEFAULT_KP 1 
+#define DEFAULT_KI 0.1
+#define DEFAULT_KD 0.5
+
+#define ROT_MAX 3  //TODO max rotations
+#define COUNTS_PER_ROT 10000 // TODO
+
+#define INIT_COUNT 0
+#define INIT_TGT 0
+
+#define FWD HIGH
+#define BCK LOW
+
+#define MAX_DUTY_CYCLE 255U
+
+
+// PWM time constants:
+#define PWM_INP_MIN 1000  // us
+#define PWM_INP_MAX 2000  // us  (pulse length roughly)
+#define PWM_OUT_FREQ 1000  // Hz todo ??
 
 /*
  *  PID controller for a DC motor with a quadrature encoder.
@@ -17,8 +37,8 @@ class Servo {
     public:
         //Servo();
         void init(uint8_t inp,
-                  uint8_t out,
-                  uint8_t reverse, 
+                  uint8_t fwd,
+                  uint8_t back,
                   uint8_t encA, 
                   uint8_t encB);
         
@@ -51,8 +71,8 @@ class Servo {
 
         // pins:
         uint8_t inp_;
-        uint8_t out_;
-        uint8_t dir_;
+        uint8_t fwd_;
+        uint8_t back_;
         uint8_t encA_;
         uint8_t encB_;
 

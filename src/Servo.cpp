@@ -4,27 +4,7 @@
 #include <analogWrite.h>
 #include <SimplyAtomic.h>
 
-#define DEFAULT_KP 1 
-#define DEFAULT_KI 0.1
-#define DEFAULT_KD 0.5
 
-#define ROT_MAX 3  //TODO max rotations
-#define COUNTS_PER_ROT 10000 // TODO
-
-#define INIT_COUNT 0
-
-#define INIT_TGT 0
-
-#define FWD HIGH
-#define BCK LOW
-
-#define MAX_DUTY_CYCLE 255U
-
-
-// PWM time constants:
-#define PWM_INP_MIN 900  // us
-#define PWM_INP_MAX 2000  // us  (pulse length roughly)
-#define PWM_OUT_FREQ 1000  // Hz
 static const long PULSEIN_TIMEOUT = 5 *  PWM_INP_MAX; // us
 static const long TGT_UPDATE_PERIOD = 20 * PWM_INP_MAX; // us
 
@@ -34,6 +14,8 @@ static const int COUNT_MAX = ROT_MAX * COUNTS_PER_ROT;
 static const int COUNT_MIN = - COUNT_MAX;
 
 // Pulse conversion constants:
+
+//todo use map
 static const float c = (1.0 / (PWM_INP_MAX - PWM_INP_MIN));
 static const float PULSE_CONVERT = c * (COUNT_MAX - COUNT_MIN);
 static const float PULSE_BIAS = c * (PWM_INP_MAX * COUNT_MIN - 
@@ -49,15 +31,15 @@ void Servo::addToCount(int toAdd) {
 }
 
 void Servo::init(uint8_t inp, 
-                 uint8_t out, 
-                 uint8_t dir, 
+                 uint8_t fwd, 
+                 uint8_t back,
                  uint8_t encA, 
                  uint8_t encB) {
     encA_ = encA;
     encB_ = encB;
     inp_ = inp;
-    out_ = out;
-    dir_ = dir;
+    fwd_ = fwd;
+    back_ = back;
     count_ = INIT_COUNT;
     tgt_ = INIT_TGT;
     Kp_ = DEFAULT_KP;
@@ -72,10 +54,11 @@ void Servo::init(uint8_t inp,
     pinMode(inp_, INPUT);  // todo INPUT_PULLUP/DOWN?
     pinMode(encA_, INPUT);
     pinMode(encB_, INPUT);
-    pinMode(out_, OUTPUT);
-    pinMode(dir_, OUTPUT);
+    pinMode(fwd_, OUTPUT);
+    pinMode(back_, OUTPUT);
     // attachInterrupt(digitalPinToInterrupt(ENCA_RIGHT), readEncoder, RISING);  // todo check why doesn't compile
-    analogWriteFrequency(out_, PWM_OUT_FREQ);
+    analogWriteFrequency(fwd_, PWM_OUT_FREQ);
+    analogWriteFrequency(back_, PWM_OUT_FREQ);
     
 }
 
@@ -102,8 +85,18 @@ void Servo::checkUpdateTgt() {
 }
 
 void Servo::setMotor(uint8_t dutyCycle, int direction) {
-    digitalWrite(dir_, direction);  // todo, perhaps more than one pin?
-    analogWrite(out_, dutyCycle, MAX_DUTY_CYCLE);
+    switch (direction) {
+        case FWD:
+            analogWrite(fwd_, dutyCycle, MAX_DUTY_CYCLE);
+            digitalWrite(back_, LOW);
+            break;
+        case BCK:
+            digitalWrite(fwd_, LOW);
+            analogWrite(back_, dutyCycle, MAX_DUTY_CYCLE);
+            break;
+        default:
+            break;
+    }
 }
 
 void Servo::updateCMD() {
